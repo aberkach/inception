@@ -1,4 +1,3 @@
-# srcs/docker-compose.yml
 version: '3.8'
 
 services:
@@ -7,37 +6,14 @@ services:
     container_name: nginx
     ports:
       - "443:443"
-    env_file: .env
-    volumes:
-      - wordpress_data:/var/www/html
-    networks:
-      - wp_network
     restart: always
-
   mariadb:
     build: ./requirements/mariadb
     container_name: mariadb
     env_file: .env
-    volumes:
-      - db_data:/var/lib/mysql
-    networks:
-      - wp_network
     restart: always
-
   wordpress:
     build: ./requirements/wordpress
     container_name: wordpress
     env_file: .env
-    volumes:
-      - wordpress_data:/var/www/html
-    networks:
-      - wp_network
     restart: always
-
-volumes:
-  db_data:
-  wordpress_data:
-
-networks:
-  wp_network:
-    driver: bridge

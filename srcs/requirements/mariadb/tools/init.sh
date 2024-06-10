@@ -12,10 +12,10 @@ FLUSH PRIVILEGES;
 "
 
 # Write and execute SQL script
-echo "$SQL_SCRIPT" > db1.sql && mariadb -u root -p \$MYSQL_ROOT_PASSWORD < db1.sql && rm db1.sql
+echo "$SQL_SCRIPT" > mdb.sql && mariadb -u root -p \$MYSQL_ROOT_PASSWORD < mdb.sql && rm mdb.sql
 
 # Shutdown and restart MariaDB
 mysqladmin -u root -p\$MYSQL_ROOT_PASSWORD shutdown
 
 # Start MariaDB service
-mariadbd
+exec mariadbd
