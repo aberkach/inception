@@ -1,21 +1,25 @@
 #!/bin/bash
 
-# Start MariaDB service
+# mariadb start
 service mariadb start
 
-# Define SQL commands
-SQL_SCRIPT="
-CREATE DATABASE IF NOT EXISTS \$MYSQL_DATABASE_NAME;
-CREATE USER IF NOT EXISTS '\$MYSQL_USER'@'%' IDENTIFIED BY '\$MYSQL_PASSWORD';
-GRANT ALL PRIVILEGES ON \$MYSQL_DATABASE_NAME.* TO '\$MYSQL_USER'@'%';
-FLUSH PRIVILEGES;
-"
+# Wait for mariadb to start
+sleep 3
 
-# Write and execute SQL script
-echo "$SQL_SCRIPT" > mdb.sql && mariadb -u root -p \$MYSQL_ROOT_PASSWORD < mdb.sql && rm mdb.sql
+# Create database if not exists
+mariadb -e "CREATE DATABASE IF NOT EXISTS \$MYSQL_DATABASE;"
 
-# Shutdown and restart MariaDB
-mysqladmin -u root -p\$MYSQL_ROOT_PASSWORD shutdown
+# Create user if not exists
+mariadb -e "CREATE USER IF NOT EXISTS '\$MYSQL_USER'@'%' IDENTIFIED BY '\$MYSQL_PASSWORD';"
 
-# Start MariaDB service
-exec mariadbd
+# Grant privileges to user
+mariadb -e "GRANT ALL PRIVILEGES ON \$MYSQL_DATABASE.* TO '\$MYSQL_USER'@'%';" 
+
+# Flush privileges to apply changes
+mariadb -e "FLUSH PRIVILEGES;"
+
+# Shutdown mariadb to restart with new config
+mysqladmin -u root -p$MYSQL_ROOT_PASSWORD shutdown
+
+# Restart mariadb with new config in the background to keep the container running
+exec mysqld_safe
