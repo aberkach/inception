@@ -1,20 +1,49 @@
- 
 version: '3.8'
 
 services:
+#-----------NGINX----------------
   nginx:
-    build: ./requirements/nginx
-    container_name: nginx
+    build:
+      context: ./requirements/nginx
     ports:
       - "443:443"
+    volumes:
+      - ./requirements/wordpress:/var/www/wordpress
+    networks:
+      - wp_network
+    depends_on:
+      - wordpress
     restart: always
-  mariadb:
-    build: ./requirements/mariadb
-    container_name: mariadb
-    env_file: .env
-    restart: always
+    env_file:
+      - .env 
+#-----------WORDPRESS----------------
   wordpress:
-    build: ./requirements/wordpress
-    container_name: wordpress
-    env_file: .env
+    build:
+      context: ./requirements/wordpress
+    volumes:
+      - ./requirements/wordpress:/var/www/html
+    networks:
+      - wp_network
+    depends_on:
+      - mariadb
     restart: always
+    env_file:
+      - ./.env  
+#-----------MARIADB----------------
+  mariadb:
+    build:
+      context: ./requirements/mariadb
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - wp_network
+    restart: always
+    env_file:
+      - ./.env 
+#-----------NETWORKS----------------
+networks:
+  wp_network:
+    driver: bridge
+#-----------VOLUMES----------------
+volumes:
+  mariadb_data:

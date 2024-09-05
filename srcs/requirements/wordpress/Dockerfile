@@ -1,18 +1,17 @@
- # srcs/requirements/wordpress/Dockerfile
+# pull the base image
 FROM debian:bullseye
 
-RUN apt-get -y update && apt-get -y upgrade &&\
-    apt-get install -y wget && \
-    apt-get install -y php8.2 && \
-	apt-get install -y php-fpm && \
-	apt-get install -y php-mysql && \
-	apt-get install -y mariadb-client
+# update and upgrade the system
+RUN apt-get update && apt-get upgrade -y
 
-RUN wget https://fr.wordpress.org/wordpress-6.5-fr_FR.tar.gz -P /var/www/html/ && \
-    cd /var/www/html/ && \
-    tar -xvf wordpress-6.5-fr_FR.tar.gz && \
-    rm -rf /var/www/html/wordpress-6.5-fr_FR.tar.gz && \
-    chown -R www-data:www-data /var/www/html/wordpress
+# install the required packages
+RUN apt-get install -y curl php php7.4-fpm php-mysql mariadb-client netcat
 
+# copy the wordpress configuration script to the root directory in the container
+COPY ./wp-init.sh /
 
-CMD ["php-fpm"]
+# change the permission of the script to make it executable
+RUN  chmod +x wp-init.sh
+
+# define the entrypoint command to run when the container starts
+ENTRYPOINT ["./wp-init.sh"]
