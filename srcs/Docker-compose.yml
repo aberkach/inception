@@ -1,49 +1,67 @@
 version: '3.8'
 
 services:
-#-----------NGINX----------------
-  nginx:
-    build:
-      context: ./requirements/nginx
-    ports:
-      - "443:443"
-    volumes:
-      - ./requirements/wordpress:/var/www/wordpress
-    networks:
-      - wp_network
-    depends_on:
-      - wordpress
-    restart: always
-    env_file:
-      - .env 
-#-----------WORDPRESS----------------
-  wordpress:
-    build:
-      context: ./requirements/wordpress
-    volumes:
-      - ./requirements/wordpress:/var/www/html
-    networks:
-      - wp_network
-    depends_on:
-      - mariadb
-    restart: always
-    env_file:
-      - ./.env  
-#-----------MARIADB----------------
+  
   mariadb:
     build:
-      context: ./requirements/mariadb
-    volumes:
-      - mariadb_data:/var/lib/mysql
-    networks:
-      - wp_network
-    restart: always
+      context: requirements/mariadb
+      dockerfile: Dockerfile
+    image: mariadb:42
+    container_name: mariadb
     env_file:
-      - ./.env 
-#-----------NETWORKS----------------
+      - ./.env
+    volumes:
+      - Mdb:/var/lib/mysql
+    restart: on-failure
+    networks:
+      - net
+
+  wordpress:
+    build:
+      context: requirements/wordpress
+      dockerfile: Dockerfile
+    image: wordpress:42
+    container_name: wordpress
+    env_file:
+      - ./.env
+    volumes:
+      - Wp:/var/www/html
+    depends_on:
+      - mariadb
+    restart: on-failure
+    networks:
+      - net
+
+  ngnix:
+    build:
+      context: requirements/nginx
+      dockerfile: Dockerfile
+    image: nginx:42
+    container_name: ngnix
+    ports:
+      - 443:443
+    env_file:
+      - ./.env
+    volumes:
+      - Wp:/var/www/html
+    depends_on:
+      - wordpress
+    restart: on-failure
+    networks:
+      - net
+
 networks:
-  wp_network:
-    driver: bridge
-#-----------VOLUMES----------------
+  net:
+    name : net
+
 volumes:
-  mariadb_data:
+  Wp:
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: /home/abberkac/data/wp-data
+  Mdb:
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: /home/abberkac/data/db-data

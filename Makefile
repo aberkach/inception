@@ -38,7 +38,6 @@ clean:
 	@docker rm $$(docker ps -qa) || true
 	@docker rmi -f $$(docker images -qa) || true
 	@docker volume rm $$(docker volume ls -q) || true
-	@docker network rm $$(docker network ls -q) || true
 	@rm -rf $(WP_DATA) || true
 	@rm -rf $(DB_DATA) || true
 
@@ -47,4 +46,4 @@ re: clean up
 
 # prune the containers: execute the clean target and remove all containers, images, volumes and networks from the system.
 prune: clean
-	@docker system prune -a --volumes -f
+	@docker system prune -af --volumes 

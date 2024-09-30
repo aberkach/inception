@@ -2,16 +2,25 @@
 FROM debian:bullseye
 
 # update and upgrade the system
-RUN apt-get update && apt-get upgrade -y
 
 # install the required packages
-RUN apt-get install -y curl php php7.4-fpm php-mysql mariadb-client netcat
+RUN apt-get update \
+    && apt-get install -y php7.4-fpm \
+    php-mysql \
+    mariadb-client \
+    curl
 
-# copy the wordpress configuration script to the root directory in the container
-COPY /conf/wp-init.sh /
+EXPOSE 9000
 
-# change the permission of the script to make it executable
-RUN  chmod +x wp-init.sh
+# download wp-cli
+RUN curl https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -O 
 
-# define the entrypoint command to run when the container starts
-ENTRYPOINT ["./wp-init.sh"]
+# copy the wp-init.sh file
+COPY /conf/init-wp.sh /tmp/wp-init.sh
+
+# give the right permissions to the wp-cli file  and move it to the bin directory
+RUN chmod +x wp-cli.phar \
+    && mv wp-cli.phar /usr/local/bin/wp 
+
+# run the wp-init.sh file
+CMD ["bash", "/tmp/wp-init.sh"]
