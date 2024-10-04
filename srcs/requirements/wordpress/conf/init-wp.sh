@@ -1,8 +1,4 @@
-#!/bin/bash
-set -e
-
-# Wait for MariaDB to start
-sleep 10
+#!/bin/bash 
 
 # Check database connectivity before proceeding
 until mysql -h $DB_HOST -u $MYSQL_USER -p$MYSQL_PASSWORD -e "SHOW DATABASES;" > /dev/null 2>&1; do
@@ -13,46 +9,46 @@ done
 # Update PHP-FPM config
 sed -i 's/listen = \/run\/php\/php7.4-fpm.sock/listen = 0.0.0.0:9000/g' /etc/php/7.4/fpm/pool.d/www.conf
 mkdir -p /run/php
+
 mkdir -p /var/www/html
+chmod 755 /var/www/html
+chown -R www-data:www-data /var/www/html
 cd /var/www/html
 
-
-# Ensure WordPress core is installed
+# download WordPress and create wp-config.php and create WordPress admin and user, if not already done
 if [ ! -f wp-config.php ]; then
     echo "Downloading WordPress..."
     wp core download --allow-root
-fi
 
-# Set correct permissions
-chown -R www-data:www-data /var/www/html
-find /var/www/html -type d -exec chmod 755 {} \;
-find /var/www/html -type f -exec chmod 644 {} \;
-
-# Create wp-config.php only if it doesn't exist
-if [ ! -f wp-config.php ]; then
+    #Create wp-config
     echo "Creating wp-config.php..."
     wp config create --allow-root \
         --dbname=$MYSQL_DB \
         --dbuser=$MYSQL_USER \
         --dbpass=$MYSQL_PASSWORD \
         --dbhost=$DB_HOST:3306
-else
-    echo "wp-config.php already exists."
+
+    # Install WordPress
+    wp core install --allow-root \
+        --url=$DOMAIN_NAME \
+        --title=$WP_TITLE \
+        --admin_user=$WP_ADMIN_N \
+        --admin_password=$WP_ADMIN_P \
+        --admin_email=$WP_ADMIN_E
+
+    # Create WordPress user
+    wp user create --allow-root \
+        $WP_U_NAME $WP_U_EMAIL \
+        --user_pass=$WP_U_PASS \
+        --role=$WP_U_ROLE
 fi
 
-# Install WordPress
-wp core install --allow-root \
-    --url=$DOMAIN_NAME \
-    --title=$WP_TITLE \
-    --admin_user=$WP_ADMIN_N \
-    --admin_password=$WP_ADMIN_P \
-    --admin_email=$WP_ADMIN_E
+# Set correct permissions
 
-# Create WordPress user
-wp user create --allow-root \
-    $WP_U_NAME $WP_U_EMAIL \
-    --user_pass=$WP_U_PASS \
-    --role=$WP_U_ROLE
+# find /var/www/html -type d -exec chmod 755 {} \;
+# find /var/www/html -type f -exec chmod 644 {} \;
+
+
 
 # Start PHP-FPM
 exec php-fpm7.4 -F

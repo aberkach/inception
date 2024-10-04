@@ -7,7 +7,7 @@ RUN apt-get -y update && \
 # Generate SSL certificate and key
 RUN mkdir /etc/nginx/ssl \
     && openssl req -x509 -nodes -out /etc/nginx/ssl/inception.crt -keyout \
-    /etc/nginx/ssl/inception.key -subj "/C=MO/ST=KH/L=KH/O=1337/CN=localhost.fr/UID=abdelfatah" 
+    /etc/nginx/ssl/inception.key -subj "/C=MO/ST=KH/L=KH/O=1337/CN=abberkac.42.fr/UID=abberkac" 
 
 # Copy the nginx configuration file
 COPY /conf/nginx.conf etc/nginx/sites-available/default
