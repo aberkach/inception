@@ -4,7 +4,7 @@
 service mariadb start
 
 # Wait for MariaDB to start
-sleep 3
+sleep 5
 
 # Create database and user for WordPress to use (if not exist) and grant all privileges
 mariadb -u root -e "
