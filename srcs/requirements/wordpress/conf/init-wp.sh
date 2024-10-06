@@ -3,11 +3,7 @@
 # Check database connectivity before proceeding
 until mysql -h $DB_HOST -u $MYSQL_USER -p$MYSQL_PASSWORD -e "SHOW DATABASES;" > /dev/null 2>&1; do
     echo "Waiting for MariaDB to be ready..."
-<<<<<<< HEAD
     sleep 2
-=======
-    sleep 1
->>>>>>> 7234556a116dd414f26d802f1257d74cb3200a69
 done
 
 # Update PHP-FPM config
