@@ -3,7 +3,7 @@
 # Check database connectivity before proceeding
 until mysql -h $DB_HOST -u $MYSQL_USER -p$MYSQL_PASSWORD -e "SHOW DATABASES;" > /dev/null 2>&1; do
     echo "Waiting for MariaDB to be ready..."
-    sleep 5
+    sleep 1
 done
 
 # Update PHP-FPM config
@@ -41,6 +41,8 @@ if [ ! -f wp-config.php ]; then
         $WP_U_NAME $WP_U_EMAIL \
         --user_pass=$WP_U_PASS \
         --role=$WP_U_ROLE
+    echo "Replacing to $DOMAIN_NAME"
+    wp search-replace 'https://localhost' "https://$DOMAIN_NAME" -- allow-root
 fi
 
 # Set correct permissions
