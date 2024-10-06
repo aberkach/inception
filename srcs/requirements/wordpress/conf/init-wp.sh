@@ -16,29 +16,33 @@ chmod 755 /var/www/html
 chown -R www-data:www-data /var/www/html
 cd /var/www/html
 
-# download WordPress
-wp core download --allow-root
+# check if WordPress is already installed
+if [ -f /var/www/html/wp-config.php ]; then
+    echo "WordPress is already installed."
+    exec php-fpm7.4 -F
+else
+    wp core download --allow-root
 
-#Create wp-config
-wp config create --allow-root \
-    --dbname=$MYSQL_DB \
-    --dbuser=$MYSQL_USER \
-    --dbpass=$MYSQL_PASSWORD \
-    --dbhost=$DB_HOST:3306
+    #Create wp-config
+    wp config create --allow-root \
+        --dbname=$MYSQL_DB \
+        --dbuser=$MYSQL_USER \
+        --dbpass=$MYSQL_PASSWORD \
+        --dbhost=$DB_HOST:3306
 
-# Install WordPress
-wp core install --allow-root \
-    --url=$DOMAIN_NAME \
-    --title=$WP_TITLE \
-    --admin_user=$WP_ADMIN_N \
-    --admin_password=$WP_ADMIN_P \
-    --admin_email=$WP_ADMIN_E
+    # Install WordPress
+    wp core install --allow-root \
+        --url=$DOMAIN_NAME \
+        --title=$WP_TITLE \
+        --admin_user=$WP_ADMIN_N \
+        --admin_password=$WP_ADMIN_P \
+        --admin_email=$WP_ADMIN_E
 
-# Create WordPress user
-wp user create --allow-root \
-    $WP_U_NAME $WP_U_EMAIL \
-    --user_pass=$WP_U_PASS \
-    --role=$WP_U_ROLE
-
-# Start PHP-FPM
-exec php-fpm7.4 -F
+    # Create WordPress user
+    wp user create --allow-root \
+        $WP_U_NAME $WP_U_EMAIL \
+        --user_pass=$WP_U_PASS \
+        --role=$WP_U_ROLE
+    # Start PHP-FPM
+    exec php-fpm7.4 -F
+fi
