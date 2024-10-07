@@ -4,7 +4,6 @@ services:
     build:
       context: requirements/mariadb
       dockerfile: Dockerfile
-    image: mariadb:42
     container_name: mariadb
     env_file:
       - ./.env
@@ -18,7 +17,6 @@ services:
     build:
       context: requirements/wordpress
       dockerfile: Dockerfile
-    image: wordpress:42
     container_name: wordpress
     env_file:
       - ./.env
@@ -34,7 +32,6 @@ services:
     build:
       context: requirements/nginx
       dockerfile: Dockerfile
-    image: nginx:42
     container_name: ngnix
     ports:
       - 443:443
