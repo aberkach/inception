@@ -16,48 +16,28 @@ chmod 755 /var/www/html
 chown -R www-data:www-data /var/www/html
 cd /var/www/html
 
-# check if WordPress is already installed
-if [ -f /var/www/html/wp-config.php ]; then
-    echo "WordPress is already downloaded."
-else
-    wp core download --allow-root
+# download WordPress
+wp core download --allow-root
 
-    # Create wp-config.php and check if it succeeds
-    if wp config create --allow-root --dbname=$MYSQL_DB --dbuser=$MYSQL_USER --dbpass=$MYSQL_PASSWORD --dbhost=$DB_HOST:3306; then
-        echo "wp-config.php created successfully."
-    else
-        echo "Failed to create wp-config.php."
-        exit 1
-    fi
-fi
+# Create wp-config.php and check if it succeeds
+wp config create --allow-root --dbname=$MYSQL_DB --dbuser=$MYSQL_USER --dbpass=$MYSQL_PASSWORD --dbhost=$DB_HOST:3306
 
-# Check if WordPress is already installed
-if wp core is-installed --allow-root; then
-    echo "WordPress is already installed."
-else
-    # Install WordPress
-    wp core install --allow-root \
-        --url=$DOMAIN_NAME \
-        --title=$WP_TITLE \
-        --admin_user=$WP_ADMIN_N \
-        --admin_password=$WP_ADMIN_P \
-        --admin_email=$WP_ADMIN_E
+# Install WordPress
+wp core install --allow-root \
+    --url=$DOMAIN_NAME \
+    --title=$WP_TITLE \
+    --admin_user=$WP_ADMIN_N \
+    --admin_password=$WP_ADMIN_P \
+    --admin_email=$WP_ADMIN_E
+# Replace localhost with the new domain
+wp search-replace 'http://localhost' "https://$DOMAIN_NAME" --allow-root
+wp cache flush --allow-root
 
-    # Replace localhost with the new domain
-    # wp search-replace 'http://localhost' "https://$DOMAIN_NAME" --allow-root
-    # wp cache flush --allow-root
-fi
-
-# Check if user already exists
-if wp user list --allow-root --role=$WP_U_ROLE | grep -q $WP_U_NAME; then
-    echo "User $WP_U_NAME already exists."
-else
-    # Create WordPress user
-    wp user create --allow-root \
-        $WP_U_NAME $WP_U_EMAIL \
-        --user_pass=$WP_U_PASS \
-        --role=$WP_U_ROLE
-fi
+# Create WordPress user
+wp user create --allow-root \
+    $WP_U_NAME $WP_U_EMAIL \
+    --user_pass=$WP_U_PASS \
+    --role=$WP_U_ROLE
 
 # Start PHP-FPM
 exec php-fpm7.4 -F
