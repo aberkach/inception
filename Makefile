@@ -1,5 +1,5 @@
-WP_DATA = ./srcs/requirements/wordpress/data #define the path to the wordpress data
-DB_DATA = ./srcs/requirements/mariadb/data #define the path to the mariadb data
+WP_DATA = /home/abberkac/data/db-data #define the path to the wordpress data
+DB_DATA = /home/abberkac/data/db-data #define the path to the mariadb data
 
 # default target
 all: up
@@ -29,9 +29,13 @@ build:
 	docker-compose -f ./srcs/docker-compose.yml build
 
 clean:
-	@docker system prune -af --volumes 
+	@docker-compose -f ./srcs/docker-compose.yml down -v
 	@rm -rf $(WP_DATA)
 	@rm -rf $(DB_DATA)
+
+# remove the containers and the data
+fclean: clean
+	@docker sysq prune -af
 
 # clean and start the containers
 re: clean up
