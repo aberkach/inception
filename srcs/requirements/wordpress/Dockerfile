@@ -10,7 +10,6 @@ RUN apt-get update \
     mariadb-client \
     curl
 
-EXPOSE 9000
 
 # download wp-cli
 RUN curl https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -O 

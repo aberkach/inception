@@ -10,8 +10,6 @@ COPY /tools/init.sh /tmp/init.sh
 # Copy the mariadb configuration file
 COPY conf/50-server.cnf /etc/mysql/mariadb.conf.d/
 
-#expose the port
-EXPOSE 3306
 
 # Run the mariadb script initialization
 CMD ["bash", "/tmp/init.sh"]

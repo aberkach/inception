@@ -16,7 +16,7 @@ chmod 755 /var/www/html
 chown -R www-data:www-data /var/www/html
 cd /var/www/html
 
-# download WordPress if it is not already installed
+# download WordPress if it is not already downloaded
 if [ ! -f /var/www/html/wp-config.php ]; then
     echo "Downloading WordPress"
     wp core download --allow-root
