@@ -56,8 +56,10 @@ volumes:
   Wp:
     driver_opts:
       o: bind
+      type: none
       device: /home/abberkac/data/wp-data
   Mdb:
     driver_opts:
       o: bind
+      type: none
       device: /home/abberkac/data/db-data

@@ -30,12 +30,12 @@ build:
 
 clean:
 	@docker-compose -f ./srcs/docker-compose.yml down -v
-	@rm -rf $(WP_DATA)
-	@rm -rf $(DB_DATA)
+	@sudo rm -rf $(WP_DATA)
+	@sudo rm -rf $(DB_DATA)
 
 # remove the containers and the data
 fclean: clean
-	@docker sysq prune -af
+	@docker system prune -af
 
 # clean and start the containers
-re: clean up
+re: fclean up

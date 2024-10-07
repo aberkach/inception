@@ -16,22 +16,20 @@ chmod 755 /var/www/html
 chown -R www-data:www-data /var/www/html
 cd /var/www/html
 
-# download WordPress
-wp core download --allow-root
+if [ ! -e wp-config.php ]; then
+    wp core download --allow-root
+    # Create wp-config.php and check if it succeeds
+    wp config create --allow-root --dbname=$MYSQL_DB --dbuser=$MYSQL_USER --dbpass=$MYSQL_PASSWORD --dbhost=$DB_HOST:3306
+fi
 
-# Create wp-config.php and check if it succeeds
-wp config create --allow-root --dbname=$MYSQL_DB --dbuser=$MYSQL_USER --dbpass=$MYSQL_PASSWORD --dbhost=$DB_HOST:3306
-
-# Install WordPress
-wp core install --allow-root \
-    --url=$DOMAIN_NAME \
-    --title=$WP_TITLE \
-    --admin_user=$WP_ADMIN_N \
-    --admin_password=$WP_ADMIN_P \
-    --admin_email=$WP_ADMIN_E
-# Replace localhost with the new domain
-wp search-replace 'http://localhost' "https://$DOMAIN_NAME" --allow-root
-wp cache flush --allow-root
+# Install WordPress if it is not already installed
+if ! wp core is-installed --allow-root; then
+    wp core install --allow-root \
+        --url=$DOMAIN_NAME \
+        --title=$WP_TITLE \
+        --admin_user=$WP_ADMIN_N \
+        --admin_password=$WP_ADMIN_P 
+fi
 
 # Create WordPress user
 wp user create --allow-root \
@@ -41,3 +39,4 @@ wp user create --allow-root \
 
 # Start PHP-FPM
 exec php-fpm7.4 -F
+
