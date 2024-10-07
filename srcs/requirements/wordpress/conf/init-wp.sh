@@ -45,7 +45,7 @@ if ! wp core is-installed --allow-root; then
 fi
 
 # create a new user for WordPress if it does not exist
-if ! wp user list --allow-root --role=editor --field=$WP_U_NAME | grep -q $WP_U_NAME; then
+if ! wp user list --allow-root --field=user_login | grep -q $WP_U_NAME; then
     wp user create --allow-root $WP_U_NAME $WP_U_EMAIL --user_pass=$WP_U_PASS --role=$WP_U_ROLE 
 fi
 
