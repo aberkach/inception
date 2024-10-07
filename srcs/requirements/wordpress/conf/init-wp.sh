@@ -1,11 +1,10 @@
 #!/bin/bash 
 
 # Check database connectivity before proceeding
-while ! mysqladmin ping -h $DB_HOST --silent; do
-    echo "Waiting for database connection..."
+until mysql -h $DB_HOST -u $MYSQL_USER -p$MYSQL_PASSWORD &> /dev/null
+do
     sleep 5
 done
-
 # Update PHP-FPM config
 sed -i 's/listen = \/run\/php\/php7.4-fpm.sock/listen = 0.0.0.0:9000/g' /etc/php/7.4/fpm/pool.d/www.conf
 mkdir -p /run/php
@@ -19,10 +18,12 @@ cd /var/www/html
 
 # download WordPress if it is not already installed
 if [ ! -f /var/www/html/wp-config.php ]; then
+    echo "Downloading WordPress"
     wp core download --allow-root
 fi
 # create wp-config.php if it does not exist
 if [ ! -f /var/www/html/wp-config.php ]; then
+    echo "Creating wp-config.php"
     wp config create --allow-root \
         --dbname=$MYSQL_DB \
         --dbuser=$MYSQL_USER \
