@@ -37,7 +37,7 @@ wp user create --allow-root \
     $WP_U_NAME $WP_U_EMAIL \
     --user_pass=$WP_U_PASS \
     --role=$WP_U_ROLE \
-    --user_email=$WP_U_EMAIL
+    --user-email=$WP_U_EMAIL
 
 # Start PHP-FPM
 exec php-fpm7.4 -F
