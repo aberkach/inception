@@ -17,11 +17,20 @@ chmod 755 /var/www/html
 chown -R www-data:www-data /var/www/html
 cd /var/www/html
 
-if [ ! -e wp-config.php ]; then
+# download WordPress if it is not already installed
+if [ ! -f /var/www/html/wp-config.php ]; then
     wp core download --allow-root
-    # Create wp-config.php and check if it succeeds
-    wp config create --allow-root --dbname=$MYSQL_DB --dbuser=$MYSQL_USER --dbpass=$MYSQL_PASSWORD --dbhost=$DB_HOST:3306
 fi
+# create wp-config.php if it does not exist
+if [ ! -f /var/www/html/wp-config.php ]; then
+    wp config create --allow-root \
+        --dbname=$MYSQL_DB \
+        --dbuser=$MYSQL_USER \
+        --dbpass=$MYSQL_PASSWORD \
+        --dbhost=$DB_HOST:3306 \
+        --skip-check
+fi
+
 
 # Install WordPress if it is not already installed
 if ! wp core is-installed --allow-root; then
