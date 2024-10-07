@@ -32,15 +32,15 @@ if ! wp core is-installed --allow-root; then
         --admin_email=$WP_ADMIN_E
 fi
 
-
-# check if the user exists, if not create it
-if ! wp user list --allow-root --role=$WP_U_ROLE; then
+# create a new user for WordPress if it does not exist
+if ! wp user list --allow-root --role=editor --field=$WP_U_NAME | grep -q $WP_U_NAME; then
     wp user create --allow-root \
-        $WP_U_NAME $WP_U_EMAIL \
-        --user_pass=$WP_U_PASS \
-        --role=$WP_U_ROLE \
-        --user-email=$WP_U_EMAIL
+       $WP_U_NAME $WP_U_EMAIL \
+       --user_pass=$WP_U_PASS \
+       --role=$WP_U_ROLE \
+       --user-email=$WP_U_EMAIL
 fi
+
 
 # Start PHP-FPM
 exec php-fpm7.4 -F
