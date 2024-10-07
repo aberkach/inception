@@ -47,6 +47,8 @@ fi
 # create a new user for WordPress if it does not exist
 if ! wp user list --allow-root --field=user_login | grep -q $WP_U_NAME; then
     wp user create --allow-root $WP_U_NAME $WP_U_EMAIL --user_pass=$WP_U_PASS --role=$WP_U_ROLE 
+else
+    echo "User $WP_U_NAME already exists"
 fi
 
 

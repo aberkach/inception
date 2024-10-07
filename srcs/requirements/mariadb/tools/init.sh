@@ -7,7 +7,7 @@ service mariadb start
 sleep 5
 
 # Create database and user for WordPress to use (if not exist) and grant all privileges
-mariadb -u root  -e "
+mariadb -u root -e "
 CREATE DATABASE IF NOT EXISTS $MYSQL_DB;
 CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';
 GRANT ALL PRIVILEGES ON $MYSQL_DB.* TO '$MYSQL_USER'@'%';
