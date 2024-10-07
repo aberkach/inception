@@ -19,8 +19,6 @@ cd /var/www/html
 
 if [ ! -e wp-config.php ]; then
     wp core download --allow-root
-    # install sendmail
-    apt-get update -y && apt-get install -y sendmail
     # Create wp-config.php and check if it succeeds
     wp config create --allow-root --dbname=$MYSQL_DB --dbuser=$MYSQL_USER --dbpass=$MYSQL_PASSWORD --dbhost=$DB_HOST:3306
 fi
@@ -32,14 +30,14 @@ if ! wp core is-installed --allow-root; then
         --title=$WP_TITLE \
         --admin_user=$WP_ADMIN_N \
         --admin_password=$WP_ADMIN_P \
-        --admin_email=$WP_ADMIN_E
+        --admin_email=$WP_ADMIN_E \
+        --skip-email
 fi
 
 # create a new user for WordPress if it does not exist
 if ! wp user list --allow-root --role=editor --field=$WP_U_NAME | grep -q $WP_U_NAME; then
     wp user create --allow-root $WP_U_NAME $WP_U_EMAIL --user_pass=$WP_U_PASS --role=$WP_U_ROLE 
 fi
-
 
 
 # Start PHP-FPM
