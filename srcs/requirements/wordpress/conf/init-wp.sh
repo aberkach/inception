@@ -1,8 +1,8 @@
 #!/bin/bash 
 
 # Check database connectivity before proceeding
-until mysql -h $DB_HOST -u $MYSQL_USER -p$MYSQL_PASSWORD -e "SHOW DATABASES;" > /dev/null 2>&1; do
-    echo "Waiting for MariaDB to be ready..."
+while ! mysqladmin ping -h $DB_HOST --silent; do
+    echo "Waiting for database connection..."
     sleep 5
 done
 
