@@ -35,7 +35,9 @@ clean:
 
 # remove the containers and the data
 fclean: clean
-	@docker system prune -af
+	@docker system prune -f
+	@docker volume prune -f
+	@docker network prune -f
 
 # clean and start the containers
 re: fclean up

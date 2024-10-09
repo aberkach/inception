@@ -14,14 +14,6 @@ GRANT ALL PRIVILEGES ON $MYSQL_DB.* TO '$MYSQL_USER'@'%';
 FLUSH PRIVILEGES;
 "
 
-
-# # grant all privileges to the newly created user
-# mysql -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO \`${MYSQL_USER}\`@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';"
-
-# # set the root password
-# mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';"
-
-
 # stop MariaDB
 service mariadb stop
 
